@@ -1,0 +1,119 @@
+.slider {
+  position: relative;
+  height: -webkit-min-content;
+  height: -moz-min-content;
+  height: min-content;
+  width: 300px;
+  height: 200px;
+}
+
+.slider .slider-value {
+  position: absolute;
+  margin-bottom: 50px;
+  margin-left: 25%;
+}
+
+.slider .range-slider {
+  position: relative;
+  height: 100%;
+  width: 6px;
+  border: 1px solid #c5c5c5;
+  border-radius: 3px;
+}
+
+.slider .range-slider .slider-range {
+  position: absolute;
+  background: -webkit-gradient(linear, left top, left bottom, from(#6fcf97), to(#66d2ea));
+  background: linear-gradient(180deg, #6fcf97, #66d2ea);
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+}
+
+.slider .range-slider .slider-handle {
+  position: absolute;
+  z-index: 2;
+  cursor: pointer;
+  -ms-touch-action: none;
+  touch-action: none;
+  left: -4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 100%;
+  border: 1px solid #fff;
+  background: -webkit-gradient(linear, left top, left bottom, from(#6fcf97), to(#66d2ea));
+  background: linear-gradient(180deg, #6fcf97, #66d2ea);
+}
+
+.slider .range-slider .value_label {
+  position: relative;
+  color: #000000a2;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  width: -webkit-min-content;
+  width: -moz-min-content;
+  width: min-content;
+  text-align: center;
+  cursor: pointer;
+  -ms-touch-action: none;
+      touch-action: none;
+  background: white;
+  border: 1px solid rgba(128, 128, 128, 0.404);
+  border-radius: 2px;
+  padding: 0 2px;
+}
+
+.slider .range-slider .label_horizontal {
+  bottom: 30px;
+}
+
+.slider .range-slider .label_horizontal::after {
+  content: '';
+  position: absolute;
+  top: 105%;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid rgba(128, 128, 128, 0.404);
+}
+
+.slider .range-slider .label_vertical {
+  left: 20px;
+}
+
+.slider .range-slider .label_vertical::after {
+  content: '';
+  position: absolute;
+  top: 25%;
+  right: 103%;
+  width: 0;
+  height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-right: 5px solid rgba(128, 128, 128, 0.404);
+}
+
+.slider .marks {
+  position: absolute;
+  color: rgba(128, 128, 128, 0.404);
+}
+
+.slider .marks .mark {
+  position: absolute;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.slider .marks_horizontal {
+  top: 12px;
+}
+
+.slider .marks_vertical {
+  right: 20px;
+}
+/*# sourceMappingURL=Range-slider.css.map */
