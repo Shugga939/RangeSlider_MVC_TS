@@ -2,7 +2,7 @@ const path = require('path');
 
 module.exports = {
   mode: 'development',
-  entry: './RangeSlider.ts',
+  entry: './src/RangeSlider.ts',
   devtool: 'eval-source-map',
   module: {
     rules: [
@@ -18,7 +18,7 @@ module.exports = {
   },
   devtool: 'eval-source-map',
   output: {
-    publicPath: 'public',
+    publicPath: 'auto',
     filename: 'RangeSlider.js',
     path: path.resolve(__dirname, 'public'),
   },
