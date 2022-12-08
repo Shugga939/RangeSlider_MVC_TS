@@ -1,34 +1,43 @@
 import {Options} from './../../../Types/Interfaces'
 import {rotation} from './../../../Types/Constants'
+import Handle from './Handle'
 
 export default class RangeLine {
     rangeLine : HTMLElement
-    isRange: boolean
-    isVertical: boolean
     slider : HTMLElement
+    handle: Handle
     options : Partial<Options>
     half_width_handle : number
     borderWidth_of_slider : number
+    isRange: boolean
+    isVertical: boolean
   
-    constructor (options: Partial<Options>, slider : HTMLElement) {
+    constructor (options: Partial<Options>, slider : HTMLElement, handle: Handle) {
+      this.slider = slider
+      this.handle = handle
       this.rangeLine  = document.createElement('span')
-      this.rangeLine.classList.add('slider-range')
       this.isRange = (options.range == true)
       this.isVertical = (options.orientation === rotation.VERTICAL)
-      this.slider = slider
     }
   
     renderLine () : void {
+      this.rangeLine.classList.add('slider-range')
       this.slider.append(this.rangeLine)
+      this.half_width_handle = this.handle.getHandle1().offsetWidth/2   
+      this.updateStyle()
     }
   
-    setOptions (options: Partial<Options>) : void {
+    setOptions (options: Options, first_value: number, second_value: number) : void {
       this.options = options
-      this.isRange = (options.range === true)
+      this.isRange = options.range === true
+      this.updateStyle()
+      console.log(first_value, second_value);
+      
+      this.update(first_value, second_value)
     }
   
-    update (first_value: number,second_value: number) : void {
-      let that = this
+    update (first_value: number, second_value: number) : void {
+      const that = this
       this.isRange? update_if_isRange() : update_if_notRange()
   
       function update_if_isRange () {
@@ -40,6 +49,7 @@ export default class RangeLine {
           that.rangeLine.style.left = `${first_value + that.half_width_handle-parseInt(getComputedStyle(that.slider).paddingLeft)}px`
         }
       }
+
       function update_if_notRange () {
         if (that.isVertical) {
           that.rangeLine.style.height = `${first_value + parseInt(getComputedStyle(that.slider).paddingTop)}px`
@@ -51,11 +61,9 @@ export default class RangeLine {
       }
     }
   
-    updateStyle (handle:HTMLElement) {
-      this.half_width_handle = handle.offsetWidth/2   
+    updateStyle () {
       this.borderWidth_of_slider = this.isVertical? this.slider.clientTop : this.slider.clientLeft 
-      let margin = this.half_width_handle + this.borderWidth_of_slider
-  
+      const margin = this.half_width_handle + this.borderWidth_of_slider
       this.isVertical? this.rangeLine.style.marginTop= `-${margin}px` :
                   this.rangeLine.style.marginLeft = `-${margin}px`
     }
