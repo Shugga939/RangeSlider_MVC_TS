@@ -16,11 +16,9 @@ export default class Slider {
   first_handle: HTMLSpanElement
   second_handle: HTMLSpanElement
   rangeLine: RangeLine
-  first_value: number
-  second_value: number
-  isRange: boolean
-  isVertical: boolean
-  step: number
+  first_value: number     // in px
+  second_value: number    // in px
+  size_slider: number
 
   constructor(options: Options, app: HTMLDivElement, observer: Observer) {
     this.options = options
@@ -30,84 +28,71 @@ export default class Slider {
     this.handle = new Handle(this.options, this.slider, this.observer)
     this.rangeLine = new RangeLine(this.options, this.slider, this.handle)
     this.marks = new Marks(this.options, this, this.handle)
-    this.isRange = options.range === true
-    this.isVertical = options.orientation === rotation.VERTICAL
-    this.step = options.step
   }
 
   renderSlider(): void {
     this.slider.classList.add('range-slider')
     this.app.append(this.slider)
-    this.handle.renderHandles()
-    this.rangeLine.renderLine()
-    if (this.options.marks.length) {
-      this.marks.render()
-    }
+    this._setSliderWidth()
+    this.handle.render(this.size_slider)
+    this.rangeLine.render()
+    this.marks.render(this.size_slider)
+  }
+
+  setValues(first_value: number, second_value: number) {
+    const isRange = this.options.range === true
+    this.first_value = first_value
+    this.second_value = isRange ? second_value : first_value
+  }
+
+  private _setSliderWidth() {
+    const isVertical = this.options.orientation === rotation.VERTICAL
+    this.size_slider = isVertical ? 
+      this.slider.getBoundingClientRect().height 
+      :                                             
+      this.slider.getBoundingClientRect().width   
   }
 
   init(first_value: number, second_value: number) {
-    this.first_value = first_value
-    this.second_value = this.isRange ? second_value : first_value
-    this._initScripts()
-    this._initStyles()
+    this.setValues(first_value, second_value)
+    this._initComponents(first_value, second_value)
+    this._addListener()
+  }
+
+  private _initComponents(first_value: number, second_value: number) {
+    this.handle.init(first_value, second_value)
+    this.rangeLine.init(first_value, second_value)
+    this.marks.init()
+  }
+
+  setOptions(options: Options, first_value: number, second_value: number) {
+    this.options = options
+    this.setValues(first_value, second_value)
+    this.handle.setOptions(options, this.first_value, this.second_value)
+    this.rangeLine.setOptions(options, this.first_value, this.second_value)
+    this.marks.setOptions(this.options)
+  }
+
+  update(first_value: number, second_value: number) {
+    this.setValues(first_value, second_value)
+    this.handle.update(this.first_handle, first_value)
+    this.handle.update(this.second_handle, second_value)
+    this.rangeLine.update(this.first_value, this.second_value)
   }
 
   getDOM_element(): HTMLDivElement {
     return this.slider
   }
 
-  setOptions(options: Options, first_value: number, second_value: number) {
-    this.first_value = first_value
-    this.second_value = this.isRange ? second_value : first_value
-    // this._initStyles()
-    this.options = options
-    this.isRange = options.range === true
-    this.isVertical = options.orientation === rotation.VERTICAL
-    this.first_value = options.values[0]
-    if (this.isRange) this.second_value = options.values[1]? options.values[1] : options.values[0]
-
-    this.handle.setOptions(options, this.first_value, this.second_value)
-    this.rangeLine.setOptions(options, this.first_value, this.second_value)
-    // this.rangeLine.update(this.first_value, this.second_value)
-    // this.handle.update(this.handle.getHandle1(), this.first_value)
-    // this.handle.update(this.handle.getHandle2(), this.second_value)
-    if (this.options.marks.length) {
-      this.marks.setOptions(this.options)
-    } else {
-      this.marks.delete()
-    }
-  }
-
-  update(first_value: number, second_value: number) {
-    this.first_value = first_value
-    this.second_value = this.isRange ? second_value : first_value
-    this.rangeLine.update(this.first_value, this.second_value)
-  }
-
-  private _initStyles() {
-    this.handle.updateStyle()
-    this.handle.update(this.handle.getHandle1(), this.first_value)
-    this.handle.update(this.handle.getHandle2(), this.second_value)
-    this.rangeLine.update(this.first_value, this.second_value)
-  }
-
-  private _initScripts() {
-    this._addListener(this.first_value, this.second_value)
-    this.handle.addListener()
-  }
-
-  private _addListener(first_value: number, second_value: number) {
+  private _addListener() {
     const triggerEvent = new Event('mousedown')
     const that = this
-    this.first_value = first_value
-    this.second_value = this.isRange ? second_value : first_value
+    const isVertical = this.options.orientation === rotation.VERTICAL
+    const isRange = this.options.range === true
+    const {step} = this.options
     this.first_handle = this.handle.getHandle1()
     this.second_handle = this.handle.getHandle2()
-    const size_slider = that.isVertical ? 
-      that.slider.getBoundingClientRect().height 
-      :                                              // вынести во view и повесить слушатель
-      that.slider.getBoundingClientRect().width     // на изменение окна и
-
+    
     this.slider.addEventListener('mousedown', sliderMove)
     this.slider.addEventListener('touchstart', sliderMove)
 
@@ -119,7 +104,7 @@ export default class Slider {
       const { x } = that.slider.getBoundingClientRect()
       let target: number
 
-      that.isVertical ? target = -(clientY - y - size_slider) :
+      isVertical ? target = -(clientY - y - that.size_slider) :
         target = clientX - x
 
       if (event.target != that.first_handle && event.target != that.second_handle) {
@@ -136,7 +121,7 @@ export default class Slider {
           let arrOfMarks = [...marksElement.children] as Array<HTMLElement>
           arrOfMarks.forEach((element) => {
             if (event.target == element) {
-              target = parseValueInPx(Number(element.dataset.value), that.options, size_slider)
+              target = parseValueInPx(Number(element.dataset.value), that.options, that.size_slider)
             }
           })
         }
@@ -144,31 +129,31 @@ export default class Slider {
 
       function moveLeftHandle(): void {
         if (parseInt(target.toFixed(1)) - 2 < 0) target = 0
-        if (that.step) parseTargetToStep()
-        that.handle.update(that.first_handle, target)
+        if (step) parseTargetToStep()
+        that.handle.broadcast(that.first_handle, target)
         that.first_handle.dispatchEvent(triggerEvent)
       }
 
       function moveBetweenHandle(): void {
         if ((target - that.first_value) <= (that.second_value - target)) {
-          if (that.step) parseTargetToStep()
-          that.handle.update(that.first_handle, target)
+          if (step) parseTargetToStep()
+          that.handle.broadcast(that.first_handle, target)
           that.first_handle.dispatchEvent(triggerEvent)
         } else {
-          if (that.step) parseTargetToStep()
-          that.handle.update(that.second_handle, target)
+          if (step) parseTargetToStep()
+          that.handle.broadcast(that.second_handle, target)
           that.second_handle.dispatchEvent(triggerEvent)
         }
       }
 
       function moveRightHandle(): void {
-        if (parseInt(target.toFixed(1)) >= size_slider - 1) { target = size_slider }
-        if (that.step) parseTargetToStep()
-        if (that.isRange) {
-          that.handle.update(that.second_handle, target)
+        if (parseInt(target.toFixed(1)) >= that.size_slider - 1) { target = that.size_slider }
+        if (step) parseTargetToStep()
+        if (isRange) {
+          that.handle.broadcast(that.second_handle, target)
           that.second_handle.dispatchEvent(triggerEvent)
         } else {
-          that.handle.update(that.first_handle, target)
+          that.handle.broadcast(that.first_handle, target)
           that.first_handle.dispatchEvent(triggerEvent)
         }
       }
@@ -178,8 +163,8 @@ export default class Slider {
         const step = that.options.step
         const value = (max_value - min_value) / step
         const val2 = step / value
-        const val3 = parsePxInValue(target, that.options, size_slider) / value
-        target = parseValueInPx(Math.round(val3 / val2) * step, that.options, size_slider)
+        const val3 = parsePxInValue(target, that.options, that.size_slider) / value
+        target = parseValueInPx(Math.round(val3 / val2) * step, that.options, that.size_slider)
       }
     }
   }

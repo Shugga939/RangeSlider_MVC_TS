@@ -20,19 +20,20 @@ export default class RangeLine {
       this.isVertical = (options.orientation === rotation.VERTICAL)
     }
   
-    renderLine () : void {
+    render () : void {
       this.rangeLine.classList.add('slider-range')
       this.slider.append(this.rangeLine)
-      this.half_width_handle = this.handle.getHandle1().offsetWidth/2   
-      this.updateStyle()
     }
-  
+    
+    init(first_value: number, second_value: number) {
+      this.updateStyle()
+      this.update(first_value, second_value)
+    }
+
     setOptions (options: Options, first_value: number, second_value: number) : void {
       this.options = options
       this.isRange = options.range === true
       this.updateStyle()
-      console.log(first_value, second_value);
-      
       this.update(first_value, second_value)
     }
   
@@ -62,6 +63,7 @@ export default class RangeLine {
     }
   
     updateStyle () {
+      this.half_width_handle = this.handle.getHandle1().offsetWidth/2   
       this.borderWidth_of_slider = this.isVertical? this.slider.clientTop : this.slider.clientLeft 
       const margin = this.half_width_handle + this.borderWidth_of_slider
       this.isVertical? this.rangeLine.style.marginTop= `-${margin}px` :

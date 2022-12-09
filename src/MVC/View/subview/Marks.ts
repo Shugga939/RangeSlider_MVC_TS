@@ -11,40 +11,41 @@ export default class Marks {
   handle: Handle
   slider: Slider
   marks: HTMLDivElement
+  size_slider: number
 
   constructor(options: Options, slider: Slider, handle: Handle) {
-    this.options = options      //delete
-    this.marksArray = options.marks
+    this.options = options     
     this.slider = slider
     this.handle = handle
     this.marks = document.createElement('div')
   }
   
-  render() {
-    this.marks.classList.add('marks')
-    const slider: HTMLElement = this.slider.getDOM_element()        // size slider => view
-    const half_width_handle: number = this.handle.getHandle1().offsetWidth / 2
-    const size_slider: number = this.options.orientation === rotation.VERTICAL ?
-      slider.getBoundingClientRect().height 
-      :
-      slider.getBoundingClientRect().width
+  render(size_slider: number) {
+    if (this.options.marks.length) {
+      this.size_slider = size_slider
+      this.marks.classList.add('marks')
+      const half_width_handle: number = this.handle.getHandle1().offsetWidth / 2
 
-    this.marksArray.forEach(element => {
-      const mark: HTMLSpanElement = document.createElement('span')
-      mark.textContent = element.label
-      mark.classList.add('mark')
-      mark.setAttribute('data-value', `${element.value}`)
+      this.options.marks.forEach(element => {
+        const mark: HTMLSpanElement = document.createElement('span')
+        mark.textContent = element.label
+        mark.classList.add('mark')
+        mark.setAttribute('data-value', `${element.value}`)
 
-      if (this.options.orientation === rotation.VERTICAL) {
-        this.marks.classList.add('marks_vertical')
-        mark.style.bottom = `${parseValueInPx(element.value, this.options, size_slider) - size_slider - half_width_handle}px`
-      } else {
-        this.marks.classList.add('marks_horizontal')
-        mark.style.left = `${parseValueInPx(element.value, this.options, size_slider)}px`
-      }
-      this.marks.append(mark)
-    });
-    this.slider.slider.append(this.marks)
+        if (this.options.orientation === rotation.VERTICAL) {
+          this.marks.classList.add('marks_vertical')
+          mark.style.bottom = `${parseValueInPx(element.value, this.options, this.size_slider) - this.size_slider - half_width_handle}px`
+        } else {
+          this.marks.classList.add('marks_horizontal')
+          mark.style.left = `${parseValueInPx(element.value, this.options, this.size_slider)}px`
+        }
+        this.marks.append(mark)
+      });
+      this.slider.slider.append(this.marks)
+    }
+  }
+  
+  init(): void {
     this.updateStyle()
   }
 
@@ -64,10 +65,14 @@ export default class Marks {
     return this.marks
   }
 
-  setOptions(opt: Options): void {
-    this.marksArray = opt.marks
-    this.delete()
-    this.render()
-    this.updateStyle()
+  setOptions(option: Options): void {
+    this.options = option
+    if (this.options.marks.length) {
+      this.delete()
+      this.render(this.size_slider)
+      this.updateStyle()
+    } else {
+      this.delete()
+    }
   }
 }

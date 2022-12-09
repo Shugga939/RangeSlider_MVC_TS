@@ -1,7 +1,5 @@
 import Slider from './subview/Slider'
 import Input from './subview/Input'
-import Handle from './subview/Handle'
-import RangeLine from './subview/RangeLine'
 import Observer from './../../Utils/Observer'
 import { parseValueInPx, parsePxInValue } from "./../../Utils/Helpers"
 import { Options } from '../../Types/Interfaces'
@@ -28,21 +26,15 @@ class View {
     this.options = options
     this._renderDOM()
     this._initValues()
-    this._initScripts()
+    this._initComponents()
+    this._addObserver()
   }
 
   setOption(options: Options): void {
     this.options = options
     this._initValues()
-    console.log();
-    
-    // this._initStyles()
     this.slider.setOptions(options, this.first_value, this.second_value)
-    // this.handle.setOptions(options, this.first_value, this.second_value)
-    // this.rangeLine.setOptions(options)
     this.input.setOptions(options)
-    // this.handle.update_handle(this.handle.getHandle1(), this.first_value)
-    // this.handle.update_handle(this.handle.getHandle2(), this.second_value)
   }
 
   _renderDOM(): void {
@@ -71,26 +63,20 @@ class View {
     this.second_value = parseValueInPx(this.options.values[1]!, this.options, this.size_slider)
   }
 
+  private _initComponents(): void {
+    this.slider.init(this.first_value, this.second_value)
+    this.input.update(this.first_value, this.second_value, this.size_slider)
+  }
 
-  _initScripts(): void {
+  _addObserver(): void {
     const that = this
-    initComponents()
-    addObserver()
-
-    function initComponents(): void {
-      that.slider.init(that.first_value, that.second_value)
-      that.input.update(that.first_value, that.second_value, that.size_slider)
-    }
-
-    function addObserver(): void {
-      that.observer.subscribe(updateValue)
+      this.observer.subscribe(updateValue)
 
       function updateValue(val1: number, val2: number): void {
         that.first_value = val1
         that.second_value = val2
         that.input.update(that.first_value, that.second_value, that.size_slider)
         that.slider.update(that.first_value, that.second_value)
-      }
     }
   }
 

@@ -2,7 +2,6 @@ import { parsePxInValue, parseValueInPx } from './../../../Utils/Helpers'
 import { Options } from './../../../Types/Interfaces'
 import { rotation } from './../../../Types/Constants'
 import Labels from './Labels'
-import Slider from './Slider'
 import Observer from './../../../Utils/Observer'
 
 export default class Handle {
@@ -12,9 +11,6 @@ export default class Handle {
   handle_1: HTMLSpanElement
   handle_2: HTMLSpanElement
   labels: Labels
-  isRange: boolean
-  isVertical: boolean
-  step: number
   first_value: number   // in px
   second_value: number  // in px
   size_slider: number
@@ -26,9 +22,99 @@ export default class Handle {
     this.handle_1 = document.createElement('span')
     this.handle_2 = document.createElement('span')
     this.labels = new Labels(this.options, this)
-    this.isRange = options.range == true
-    this.isVertical = options.orientation === rotation.VERTICAL
-    this.step = options.step
+  }
+
+  render(size_slider: number): void {
+    this.size_slider = size_slider
+    const isRange = this.options.range == true
+    this.handle_1.classList.add('slider-handle')
+    this.handle_2.classList.add('slider-handle')
+    const arrOfHandles: Array<HTMLSpanElement> = [this.handle_1]
+    if (isRange) arrOfHandles.push(this.handle_2)
+    arrOfHandles.forEach(el => this.slider.append(el))
+    if (this.options.label === true) this.labels.render()
+  }
+
+  init(first_value: number, second_value: number): void  {
+    this.first_value = first_value
+    this.second_value =  second_value
+    this._addListener()
+    this._initStyle()
+    this.update(this.handle_1, this.first_value)
+    this.update(this.handle_2, this.second_value)
+  }
+
+  setOptions(options: Options, first_value: number, second_value: number): void {
+    this.options = options
+    const isRange = this.options.range == true
+    this.first_value = first_value
+    this.second_value = second_value
+
+    if (isRange) {
+      this.handle_1.after(this.handle_2)
+      this._initStyle()
+      this._addListener()
+    } else {
+      this.handle_2.remove()
+    }
+
+    if (this.options.label == true) {
+      this.labels.setOptions(options)
+      this.labels.render()
+    } else {
+      this.labels.delete()
+    }
+
+    this.update(this.handle_1, this.first_value)
+    this.update(this.handle_2, this.second_value)
+  }
+
+  update(handle: HTMLSpanElement, spacing_target: number): void {
+    const that = this
+    const isVertical = this.options.orientation === rotation.VERTICAL
+    updatePosition()
+    updateLables()
+
+    function updatePosition() {
+      isVertical ?
+        handle.style.bottom = `${spacing_target}px`
+        :
+        handle.style.left = `${spacing_target}px`;
+    }
+
+    function updateLables() {
+      if (that.options.label === true) {
+        that.labels.update(
+          parsePxInValue(that.first_value, that.options, that.size_slider),
+          parsePxInValue(that.second_value, that.options, that.size_slider)
+        )
+      }
+    }
+  }
+
+  broadcast(handle: HTMLSpanElement, spacing_target: number): void  {
+    handle == this.handle_1 ?
+      this.first_value = spacing_target
+      :
+      this.second_value = spacing_target
+
+    this.observer.broadcast(this.first_value, this.second_value)
+  }
+
+  private _initStyle(): void {
+    const isRange = this.options.range == true
+    const isVertical = this.options.orientation === rotation.VERTICAL
+    const half_width_handle = isVertical ? this.handle_1.offsetHeight / 2 : this.handle_1.offsetWidth / 2
+    const borderWidth_of_slider = isVertical ? this.slider.clientTop : this.slider.clientLeft
+    const margin = half_width_handle + borderWidth_of_slider
+
+    if (isVertical) {
+      this.handle_1.style.marginBottom = `-${margin}px`
+      if (isRange) this.handle_2.style.marginBottom = `-${margin}px`
+    } else {
+      this.handle_1.style.marginLeft = `-${margin}px`
+      if (isRange) this.handle_2.style.marginLeft = `-${margin}px`
+    }
   }
 
   getHandle1(): HTMLSpanElement {
@@ -39,86 +125,18 @@ export default class Handle {
     return this.handle_2
   }
 
-  setOptions(options: Options, first_value: number, second_value: number): void {
-    this.options = options
-    this.isRange = options.range === true
-    this.step = options.step
-    this.first_value = first_value
-    this.second_value = second_value
-
-    if (this.isRange) {
-      this.handle_1.after(this.handle_2)
-      this.updateStyle()
-      this.addListener()
-    } else {
-      this.handle_2.remove()
-    }
-    if (this.options.label == true) {
-      this.labels.setOptions(options)
-      this.labels.render()
-    } else {
-      this.labels.delete()
-    }
-    this.update(this.handle_1, this.first_value)
-    this.update(this.handle_2, this.second_value)
-  }
-
-  update(handle: HTMLSpanElement, spacing_target: number): void {
-    this.isVertical ?
-      handle.style.bottom = `${spacing_target}px`
-      :
-      handle.style.left = `${spacing_target}px`;
-
-    handle == this.handle_1 ?
-      this.first_value = spacing_target
-      :
-      this.second_value = spacing_target
-
-    this.observer.broadcast(this.first_value, this.second_value)
-    if (this.options.label === true) {
-      this.labels.update(
-        parsePxInValue(this.first_value, this.options, this.size_slider),
-        parsePxInValue(this.second_value, this.options, this.size_slider)
-      )
-    }
-  }
-
-  renderHandles(): void {
-    this.handle_1.classList.add('slider-handle')
-    this.handle_2.classList.add('slider-handle')
-    const arrOfHandles: Array<HTMLSpanElement> = [this.handle_1]
-    if (this.isRange) arrOfHandles.push(this.handle_2)
-    arrOfHandles.forEach(el => this.slider.append(el))
-    if (this.options.label === true) this.labels.render()
-  }
-
-  updateStyle(): void {
-    const half_width_handle = this.isVertical ? this.handle_1.offsetHeight / 2 : this.handle_1.offsetWidth / 2
-    const borderWidth_of_slider = this.isVertical ? this.slider.clientTop : this.slider.clientLeft
-    const margin = half_width_handle + borderWidth_of_slider
-
-    if (this.isVertical) {
-      this.handle_1.style.marginBottom = `-${margin}px`
-      if (this.isRange) this.handle_2.style.marginBottom = `-${margin}px`
-    } else {
-      this.handle_1.style.marginLeft = `-${margin}px`
-      if (this.isRange) this.handle_2.style.marginLeft = `-${margin}px`
-    }
-  }
-
-  addListener(): void {
+  _addListener(): void {
     const that = this
     const slider = this.slider
-    this.size_slider = this.isVertical ?
-      slider.getBoundingClientRect().height
-      :
-      slider.getBoundingClientRect().width
-
-    const borderWidth_of_slider = this.isVertical ? slider.clientTop : slider.clientLeft
+    const isRange = this.options.range == true
+    const isVertical = this.options.orientation === rotation.VERTICAL
+    const step = this.options.step
+    const borderWidth_of_slider = isVertical ? slider.clientTop : slider.clientLeft
+    
     this.handle_1.addEventListener('mousedown', HandleMove)
     this.handle_1.addEventListener('touchstart', HandleMove)
 
-    if (this.isRange) {
+    if (isRange) {
       this.handle_2.addEventListener('mousedown', HandleMove)
       this.handle_2.addEventListener('touchstart', HandleMove)
     }
@@ -139,7 +157,7 @@ export default class Handle {
       let shift: number
       let margin_handle: number
 
-      if (that.isVertical) {
+      if (isVertical) {
         shift = (clientY - handle.getBoundingClientRect().top - handle.offsetHeight / 2) || 0    // было || "0"
         margin_handle = parseInt(getComputedStyle(handle).marginTop)
       } else {
@@ -155,16 +173,16 @@ export default class Handle {
         let target: number
         let newRight = that.size_slider
 
-        that.isVertical ?
+        isVertical ?
           target = -(clientY - y - shift - margin_handle - that.size_slider)
           :
           target = clientX - x - shift - margin_handle - borderWidth_of_slider
 
-        that.step ? moveIfStep() : moveIfNotStep()
+        step ? moveIfStep() : moveIfNotStep()
 
         function moveIfNotStep() {
           if (handle == that.handle_1) {
-            if (that.isRange) newRight = that.second_value
+            if (isRange) newRight = that.second_value
             if (target < 0) target = 0
           } else {
             if (target < that.first_value) target = that.first_value
@@ -172,11 +190,11 @@ export default class Handle {
           if (target > newRight) {
             target = newRight;
           }
-          that.update(handle, target)
+          that.broadcast(handle, target)
         }
 
         function moveIfStep() {
-          const step = that.step
+          const step = that.options.step
           let target_up: number
           let target_down: number
 
@@ -187,15 +205,15 @@ export default class Handle {
           if (target_down < 0) target_down = 0
 
           if (target >= target_up) {
-            if (that.isRange && handle == that.handle_1) newRight = that.second_value
+            if (isRange && handle == that.handle_1) newRight = that.second_value
             if (target_up > newRight) { target_up = newRight }
-            that.update(handle, target_up)
+            that.broadcast(handle, target_up)
           }
 
           if (target <= target_down) {
-            if (that.isRange && handle == that.handle_2 && target_down < that.first_value) target_down = that.first_value
+            if (isRange && handle == that.handle_2 && target_down < that.first_value) target_down = that.first_value
             if (target_down < 0) { target_down = 0 }
-            that.update(handle, target_down)
+            that.broadcast(handle, target_down)
           }
         }
       }
