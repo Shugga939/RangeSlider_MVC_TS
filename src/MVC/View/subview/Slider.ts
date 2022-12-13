@@ -18,25 +18,25 @@ export default class Slider {
   rangeLine: RangeLine
   first_value: number     // in px
   second_value: number    // in px
-  size_slider: number
+  size_slider: number    // in px
 
   constructor(options: Options, app: HTMLDivElement, observer: Observer) {
     this.options = options
     this.app = app
     this.observer = observer
-    this.slider = document.createElement('div')
-    this.handle = new Handle(this.options, this.slider, this.observer)
-    this.rangeLine = new RangeLine(this.options, this.slider, this.handle)
-    this.marks = new Marks(this.options, this, this.handle)
+    this.handle = new Handle(this.options, this.observer)
+    this.rangeLine = new RangeLine(this.options, this.handle)
+    this.marks = new Marks(this.options, this.handle)
   }
-
+  
   renderSlider(): void {
+    this.slider = document.createElement('div')  
     this.slider.classList.add('range-slider')
     this.app.append(this.slider)
     this._setSliderWidth()
-    this.handle.render(this.size_slider)
-    this.rangeLine.render()
-    this.marks.render(this.size_slider)
+    this.handle.render(this.slider, this.size_slider)
+    this.rangeLine.render(this.slider)
+    this.marks.render(this.slider, this.size_slider)
   }
 
   setValues(first_value: number, second_value: number) {
@@ -79,6 +79,13 @@ export default class Slider {
     this.handle.update(this.second_handle, second_value)
     this.rangeLine.update(this.first_value, this.second_value)
   }
+
+  updateSize(size_slider: number, values: Array<number>) {
+    this.size_slider = size_slider
+    this.handle.updateSize(size_slider)
+    this.handle.broadcast(this.first_handle, values[0])
+    this.handle.broadcast(this.second_handle, values[1])
+  } 
 
   getDOM_element(): HTMLDivElement {
     return this.slider

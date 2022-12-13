@@ -12,15 +12,15 @@ export default class RangeLine {
     isRange: boolean
     isVertical: boolean
   
-    constructor (options: Partial<Options>, slider : HTMLElement, handle: Handle) {
-      this.slider = slider
+    constructor (options: Partial<Options>, handle: Handle) {
       this.handle = handle
       this.rangeLine  = document.createElement('span')
       this.isRange = (options.range == true)
       this.isVertical = (options.orientation === rotation.VERTICAL)
     }
-  
-    render () : void {
+    
+    render (slider : HTMLElement) : void {
+      this.slider = slider
       this.rangeLine.classList.add('slider-range')
       this.slider.append(this.rangeLine)
     }

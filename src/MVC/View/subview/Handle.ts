@@ -15,16 +15,16 @@ export default class Handle {
   second_value: number  // in px
   size_slider: number
 
-  constructor(options: Options, slider: HTMLDivElement, observer: Observer) {
+  constructor(options: Options, observer: Observer) {
     this.options = options
-    this.slider = slider
     this.observer = observer
     this.handle_1 = document.createElement('span')
     this.handle_2 = document.createElement('span')
     this.labels = new Labels(this.options, this)
   }
-
-  render(size_slider: number): void {
+  
+  render(slider: HTMLDivElement, size_slider: number): void {
+    this.slider = slider
     this.size_slider = size_slider
     const isRange = this.options.range == true
     this.handle_1.classList.add('slider-handle')
@@ -90,6 +90,12 @@ export default class Handle {
         )
       }
     }
+  }
+
+  updateSize(size_slider: number) {
+    this.size_slider = size_slider
+    // const first_value = parseValueInPx()
+    // this.update()
   }
 
   broadcast(handle: HTMLSpanElement, spacing_target: number): void  {

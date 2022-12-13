@@ -3,24 +3,23 @@ import { Options, Mark } from './../../../Types/Interfaces'
 import { rotation } from './../../../Types/Constants'
 
 import Handle from './Handle'
-import Slider from "./Slider"
 
 export default class Marks {
   options: Options
   marksArray: Array<Mark>
   handle: Handle
-  slider: Slider
+  slider: HTMLDivElement
   marks: HTMLDivElement
   size_slider: number
 
-  constructor(options: Options, slider: Slider, handle: Handle) {
+  constructor(options: Options, handle: Handle) {
     this.options = options     
-    this.slider = slider
     this.handle = handle
     this.marks = document.createElement('div')
   }
   
-  render(size_slider: number) {
+  render(slider: HTMLDivElement, size_slider: number) {
+    this.slider = slider
     if (this.options.marks.length) {
       this.size_slider = size_slider
       this.marks.classList.add('marks')
@@ -41,7 +40,7 @@ export default class Marks {
         }
         this.marks.append(mark)
       });
-      this.slider.slider.append(this.marks)
+      this.slider.append(this.marks)
     }
   }
   
@@ -69,7 +68,7 @@ export default class Marks {
     this.options = option
     if (this.options.marks.length) {
       this.delete()
-      this.render(this.size_slider)
+      this.render(this.slider, this.size_slider)
       this.updateStyle()
     } else {
       this.delete()
