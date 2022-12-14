@@ -4,38 +4,33 @@ import Handle from './Handle'
 
 export default class Input {
   options: Options
-  app: HTMLDivElement
   input: HTMLInputElement
-  isRange: boolean
   handle: Handle
   size_slider: number
   first_handle: HTMLSpanElement
   second_handle: HTMLSpanElement
   
-  constructor (options: Options, app: HTMLDivElement) {
+  constructor (options: Options) {
     this.options = options
-    this.app = app
+  }
+  
+  renderInput (app: HTMLDivElement) :void {
     this.input = document.createElement('input')
     this.input.classList.add('slider-value')
     this.input.type = 'text'
-    this.isRange = (options.range === true)
-  }
-
-  renderInput () :void {
-    this.app.append(this.input)
+    app.append(this.input)
   }
   
   setOptions (options: Options) :void {
     this.options = options
-    this.isRange = (options.range == true)
+    // this.isRange = (options.range == true)
   }
 
-  update (value_1: number, value_2: number, size_slider: number) {         
-    let {separator = '', modifier = ''} = this.options
-    let first_value = parsePxInValue(value_1, this.options,size_slider)   
-    let second_value = parsePxInValue(value_2, this.options,size_slider)  
-  
-    if (this.isRange) {
+  update (first_value: number, second_value: number) {         
+    const {separator = '', modifier = ''} = this.options
+    const isRange = this.options.range === true
+    
+    if (isRange) {
       this.input.value = first_value + modifier + separator + second_value + modifier
     } else {
       this.input.value = first_value + modifier

@@ -10,7 +10,6 @@ import Input from './subview/Input'
 class View {
   parrentElement: HTMLDivElement
   options: Options
-  app: HTMLDivElement
   observer: Observer
   slider: Slider
   input: Input
@@ -30,30 +29,30 @@ class View {
     this._initValues()
     this._initComponents()
     this._addObserver()
+    this._addResizeListener()
   }
 
   setOption(options: Options): void {
     this.options = options
-    console.log(this.options);
-    
     this._initValues()
     this.slider.setOptions(options, this.first_value, this.second_value)
     this.input.setOptions(options)
   }
 
   _renderDOM(): void {
+    let app
     if (this.parrentElement.classList.contains('slider')) {
-      this.app = this.parrentElement
+      app = this.parrentElement
     } else {
-      this.app = document.createElement('div')
-      this.app.classList.add('slider')
-      this.parrentElement.append(this.app)
+      app = document.createElement('div')
+      app.classList.add('slider')
+      this.parrentElement.append(app)
     }
-    this.slider = new Slider(this.options, this.app, this.observer)
-    this.slider.renderSlider()
+    this.slider = new Slider(this.options, this.observer)
+    this.slider.renderSlider(app)
 
-    this.input = new Input(this.options, this.app)
-    this.input.renderInput()
+    this.input = new Input(this.options)
+    this.input.renderInput(app)
   }
 
   _initValues(): void {
@@ -72,25 +71,27 @@ class View {
 
   private _initComponents(): void {
     this.slider.init(this.first_value, this.second_value)
-    this.input.update(this.first_value, this.second_value, this.size_slider)
+    this.input.update(this.parsedValues[0], this.parsedValues[1])
   }
 
   _addObserver(): void {
     const that = this
-      this.observer.subscribe(updateValue)
+    this.observer.subscribe(updateValue)
 
-      function updateValue(val1: number, val2: number): void {
-        that.first_value = val1
-        that.second_value = val2
-        that.input.update(that.first_value, that.second_value, that.size_slider)
-        that.slider.update(that.first_value, that.second_value)
-        that.parsedValues = [
-          parsePxInValue(that.first_value, that.options, that.size_slider),
-          parsePxInValue(that.second_value, that.options, that.size_slider)
-        ]
+    function updateValue(val1: number, val2: number): void {
+      that.first_value = val1
+      that.second_value = val2
+      that.parsedValues = [
+        parsePxInValue(that.first_value, that.options, that.size_slider),
+        parsePxInValue(that.second_value, that.options, that.size_slider)
+      ]
+      that.slider.update(that.first_value, that.second_value)
+      that.input.update(that.parsedValues[0], that.parsedValues[1])
     }
+  }
 
-    window.addEventListener('resize', ()=> {
+  _addResizeListener(): void {
+    const resizeHandler = ()=> {
       const isVertical = this.options.orientation === rotation.VERTICAL
       const slider_element = this.slider.getDOM_element()
 
@@ -104,14 +105,13 @@ class View {
 
       this.size_slider = size_slider
       this.slider.updateSize(this.size_slider, [v1,v2])
-    })
+    }
+    
+    window.addEventListener('resize', resizeHandler)
   }
 
-  getCurrentValues(): [number, number | undefined] {
-    return [
-      parsePxInValue(this.first_value, this.options, this.size_slider),
-      parsePxInValue(this.second_value, this.options, this.size_slider)
-    ]
+  getCurrentValues(): Array<number> {
+    return this.parsedValues
   }
 }
 

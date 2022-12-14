@@ -9,20 +9,22 @@ export default class Marks {
   marksArray: Array<Mark>
   handle: Handle
   slider: HTMLDivElement
-  marks: HTMLDivElement
+  marksContainer: HTMLDivElement
   size_slider: number
+  marks: Array<HTMLSpanElement>
 
   constructor(options: Options, handle: Handle) {
     this.options = options     
     this.handle = handle
-    this.marks = document.createElement('div')
+    this.marksContainer = document.createElement('div')
+    this.marks = []
   }
   
   render(slider: HTMLDivElement, size_slider: number) {
     this.slider = slider
     if (this.options.marks.length) {
       this.size_slider = size_slider
-      this.marks.classList.add('marks')
+      this.marksContainer.classList.add('marks')
       const half_width_handle: number = this.handle.getHandle1().offsetWidth / 2
 
       this.options.marks.forEach(element => {
@@ -30,17 +32,18 @@ export default class Marks {
         mark.textContent = element.label
         mark.classList.add('mark')
         mark.setAttribute('data-value', `${element.value}`)
-
+        
         if (this.options.orientation === rotation.VERTICAL) {
-          this.marks.classList.add('marks_vertical')
+          this.marksContainer.classList.add('marks_vertical')
           mark.style.bottom = `${parseValueInPx(element.value, this.options, this.size_slider) - this.size_slider - half_width_handle}px`
         } else {
-          this.marks.classList.add('marks_horizontal')
+          this.marksContainer.classList.add('marks_horizontal')
           mark.style.left = `${parseValueInPx(element.value, this.options, this.size_slider)}px`
         }
-        this.marks.append(mark)
+        this.marks.push(mark)
+        this.marksContainer.append(mark)
       });
-      this.slider.append(this.marks)
+      this.slider.append(this.marksContainer)
     }
   }
   
@@ -49,19 +52,31 @@ export default class Marks {
   }
 
   updateStyle(): void {
-    let arrOfMarks = [...this.marks.children] as Array<HTMLElement>
+    const arrOfMarks = [...this.marksContainer.children] as Array<HTMLElement>
     arrOfMarks.forEach((el) => {
       el.style.marginLeft = `-${el.offsetWidth / 2}px`
     })
   }
 
+  updateSize(size_slider: number): void {
+    this.size_slider = size_slider
+    const half_width_handle: number = this.handle.getHandle1().offsetWidth / 2
+    this.options.marks.forEach((element, index) => {
+      if (this.options.orientation === rotation.VERTICAL) {
+        this.marks[index].style.bottom = `${parseValueInPx(element.value, this.options, this.size_slider) - this.size_slider - half_width_handle}px`
+      } else {
+        this.marks[index].style.left = `${parseValueInPx(element.value, this.options, this.size_slider)}px`
+      }
+    })
+  }
+
   delete(): void {
-    Array.from(this.marks.children).forEach(el => el.remove())
-    this.marks.remove()
+    Array.from(this.marksContainer.children).forEach(el => el.remove())
+    this.marksContainer.remove()
   }
 
   getDOM_element(): HTMLDivElement {
-    return this.marks
+    return this.marksContainer
   }
 
   setOptions(option: Options): void {

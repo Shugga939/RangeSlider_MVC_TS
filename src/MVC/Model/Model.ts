@@ -48,11 +48,76 @@ class Model {
   }
 
   private _validationOfSetebleOptions(setebleOptions: Options) {   // исключения при установке опций на "лету"
+    const that = this
     const secondValueIsSeteble =  setebleOptions?.values?.length == 2
     const secondValueIsExists =  this.options?.values?.length == 2
+    let second_value = this.options.values[1]
 
-    if (setebleOptions.range && !secondValueIsSeteble && !secondValueIsExists) {
-      this.options.values[1] = this.options.max_value
+    if (setebleOptions.max_value || setebleOptions.max_value) validationExceedingsValues()
+    validationSecondValue()
+    console.log(this.options.values);
+    
+
+    function validationSecondValue () {
+      if (setebleOptions.range && !secondValueIsSeteble && !secondValueIsExists) {
+        second_value = setebleOptions.max_value || that.options.max_value
+      } else if (setebleOptions.range && !secondValueIsSeteble && secondValueIsExists) {
+      }
+      
+      if (that.options.range && setebleOptions.range == false ) {
+        second_value = undefined
+      } else if (!that.options.range && setebleOptions.range ) {
+        second_value = setebleOptions.max_value || that.options.max_value
+      }
+      
+      if (secondValueIsSeteble) {
+        second_value = setebleOptions.values[1]
+      } else if (secondValueIsExists) {
+        second_value = that.options.values[1] 
+      } else {
+        second_value = setebleOptions.max_value || that.options.max_value
+      }
+    }
+
+
+    function validationExceedingsValues() {
+      const setebleMaxValue = setebleOptions.max_value
+      const setebleMinValue = setebleOptions.min_value
+      const existingFirstValue = that.options.values[0]
+      const existingSecondValue = that.options.values[1]
+
+
+      if (setebleOptions?.values?.length == 1 ) {
+        if (setebleMaxValue && setebleOptions.values[0] > setebleMaxValue ) {
+          setebleOptions.values[0] = setebleMaxValue
+        }
+        if (setebleMaxValue && setebleOptions.values[0] < setebleMinValue ) {
+          setebleOptions.values[0] = setebleMinValue
+        }
+      }
+
+      if (setebleOptions?.values?.length == 2 ) {
+        if (setebleMaxValue && setebleOptions.values[1] > setebleMaxValue ) {
+          setebleOptions.values[1] = setebleMaxValue
+        }
+        if (setebleMaxValue && setebleOptions.values[1] < setebleMinValue ) {
+          setebleOptions.values[1] = setebleMinValue
+        }
+      }
+
+      if (existingFirstValue > setebleMaxValue) {
+        that.options.values[0] = setebleMaxValue
+      } else if (existingFirstValue < setebleMinValue) {
+        that.options.values[0] = setebleMinValue
+      }
+
+      if (existingSecondValue) {
+        if (existingSecondValue > setebleMaxValue) {
+          that.options.values[1] = setebleMaxValue
+        } else if (existingSecondValue < setebleMinValue) {
+          that.options.values[1] = setebleMinValue
+        }
+      }
     }
   }
     

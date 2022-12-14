@@ -64,9 +64,9 @@ export default class Handle {
     } else {
       this.labels.delete()
     }
-
-    this.update(this.handle_1, this.first_value)
-    this.update(this.handle_2, this.second_value)
+    
+    this.broadcast(this.handle_1, this.first_value)
+    this.broadcast(this.handle_2, this.second_value)
   }
 
   update(handle: HTMLSpanElement, spacing_target: number): void {
@@ -92,10 +92,10 @@ export default class Handle {
     }
   }
 
-  updateSize(size_slider: number) {
+  updateSize(size_slider: number, values: Array<number>) {
     this.size_slider = size_slider
-    // const first_value = parseValueInPx()
-    // this.update()
+    this.broadcast(this.handle_1, values[0])
+    this.broadcast(this.handle_2, values[1])
   }
 
   broadcast(handle: HTMLSpanElement, spacing_target: number): void  {
