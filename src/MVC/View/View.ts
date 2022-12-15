@@ -36,7 +36,7 @@ class View {
     this.options = options
     this._initValues()
     this.slider.setOptions(options, this.first_value, this.second_value)
-    this.input.setOptions(options)
+    this.input.setOptions(options, this.options.values[0], this.options.values[1])
   }
 
   _renderDOM(): void {
@@ -71,6 +71,7 @@ class View {
 
   private _initComponents(): void {
     this.slider.init(this.first_value, this.second_value)
+    this.input.init(this.slider.handle, this.size_slider)
     this.input.update(this.parsedValues[0], this.parsedValues[1])
   }
 

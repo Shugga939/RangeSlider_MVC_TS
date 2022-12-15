@@ -73,6 +73,7 @@ export default class Marks {
   delete(): void {
     Array.from(this.marksContainer.children).forEach(el => el.remove())
     this.marksContainer.remove()
+    this.marks = []
   }
 
   getDOM_element(): HTMLDivElement {

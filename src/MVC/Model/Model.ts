@@ -51,31 +51,28 @@ class Model {
     const that = this
     const secondValueIsSeteble =  setebleOptions?.values?.length == 2
     const secondValueIsExists =  this.options?.values?.length == 2
-    let second_value = this.options.values[1]
 
     if (setebleOptions.max_value || setebleOptions.max_value) validationExceedingsValues()
     validationSecondValue()
-    console.log(this.options.values);
     
 
     function validationSecondValue () {
       if (setebleOptions.range && !secondValueIsSeteble && !secondValueIsExists) {
-        second_value = setebleOptions.max_value || that.options.max_value
-      } else if (setebleOptions.range && !secondValueIsSeteble && secondValueIsExists) {
-      }
+        that.options.values[1] = setebleOptions.max_value || that.options.max_value
+      } 
       
       if (that.options.range && setebleOptions.range == false ) {
-        second_value = undefined
+        that.options.values[1] = undefined
       } else if (!that.options.range && setebleOptions.range ) {
-        second_value = setebleOptions.max_value || that.options.max_value
+        that.options.values[1] = setebleOptions.max_value || that.options.max_value
       }
       
       if (secondValueIsSeteble) {
-        second_value = setebleOptions.values[1]
+        that.options.values[1] = setebleOptions.values[1]
       } else if (secondValueIsExists) {
-        second_value = that.options.values[1] 
+        // that.options.values[1] = that.options.values[1] 
       } else {
-        second_value = setebleOptions.max_value || that.options.max_value
+        that.options.values[1] = setebleOptions.max_value || that.options.max_value
       }
     }
 
