@@ -1,2 +1,8 @@
 node_modules
 coverage
+src
+jest.config.jest
+package-lock.json
+README.md
+tsconfig.json
+webpack.config.js
