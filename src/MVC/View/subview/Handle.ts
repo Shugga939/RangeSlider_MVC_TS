@@ -1,8 +1,10 @@
 import { parsePxInValue, parseValueInPx } from './../../../Utils/Helpers'
+import Observer from './../../../Utils/Observer'
+
 import { Options } from './../../../Types/Interfaces'
 import { rotation } from './../../../Types/Constants'
+
 import Labels from './Labels'
-import Observer from './../../../Utils/Observer'
 
 export default class Handle {
   options: Options

@@ -1,9 +1,11 @@
 import { parsePxInValue, parseValueInPx } from './../../../Utils/Helpers'
-import Handle from './Handle'
-import { Options } from './../../../Types/Interfaces'
-import Marks from './../subview/Marks'
-import { rotation } from './../../../Types/Constants'
 import Observer from './../../../Utils/Observer'
+
+import { rotation } from './../../../Types/Constants'
+import { Options } from './../../../Types/Interfaces'
+
+import Marks from './../subview/Marks'
+import Handle from './Handle'
 import RangeLine from './RangeLine'
 
 export default class Slider {

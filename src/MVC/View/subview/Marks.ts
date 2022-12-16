@@ -1,4 +1,5 @@
 import { parseValueInPx } from './../../../Utils/Helpers'
+
 import { Options, Mark } from './../../../Types/Interfaces'
 import { rotation } from './../../../Types/Constants'
 

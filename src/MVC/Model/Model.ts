@@ -54,7 +54,6 @@ class Model {
 
     if (setebleOptions.max_value || setebleOptions.max_value) validationExceedingsValues()
     validationSecondValue()
-    
 
     function validationSecondValue () {
       if (setebleOptions.range && !secondValueIsSeteble && !secondValueIsExists) {
@@ -82,7 +81,6 @@ class Model {
       const setebleMinValue = setebleOptions.min_value
       const existingFirstValue = that.options.values[0]
       const existingSecondValue = that.options.values[1]
-
 
       if (setebleOptions?.values?.length == 1 ) {
         if (setebleMaxValue && setebleOptions.values[0] > setebleMaxValue ) {
@@ -171,7 +169,7 @@ class Model {
       )
     } else {
       options.marks = []
-      throw 'Массив с "марками'
+      throw 'Массив с "марками"'
     }
   }
 }
