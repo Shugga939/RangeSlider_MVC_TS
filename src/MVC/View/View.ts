@@ -4,8 +4,8 @@ import Observer from './../../Utils/Observer'
 import { Options } from '../../Types/Interfaces'
 import { rotation } from '../../Types/Constants'
 
-import Slider from './subview/Slider'
-import Input from './subview/Input'
+import Slider from './subview/Slider/Slider'
+import Input from './subview/Input/Input'
 
 class View {
   parrentElement: HTMLDivElement

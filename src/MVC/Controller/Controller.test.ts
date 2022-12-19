@@ -40,18 +40,25 @@ describe('Controller test', () => {
   const sliderElem: HTMLDivElement = document.createElement('div');
   const model = new Model(options)
   const view = new View(sliderElem)
+
+    // @ts-ignore
+  window.HTMLElement.prototype.getBoundingClientRect = () => {
+    return {
+      width: 5,
+      height: 300,
+    };
+  };
   
   test('Init components method', () => {
     const init = jest.spyOn(view, 'init');
     new Controller(model, view);
     expect(init).toHaveBeenCalled();
     expect(init).toHaveBeenCalledTimes(1);
-
   });
   
   test('getValue method', () => {
     const controller = new Controller(model, view);
-    let value = controller.getValue();
+    const value = controller.getValue();
     expect(value).toEqual(options.values);
   });
 
@@ -59,15 +66,19 @@ describe('Controller test', () => {
     const controller = new Controller(model, view);
     const viewSetOption = jest.spyOn(view, 'setOption');
     const modelSetOption = jest.spyOn(model, 'setOption');
+    
+    const changbleOptions : Options = {...options, values: [30,90]}
+    controller.setOptions(changbleOptions)
 
-    controller.setOptions(options)
     expect(modelSetOption).toHaveBeenCalled();
     expect(modelSetOption).toBeCalledTimes(1)
-    expect(modelSetOption).toHaveBeenLastCalledWith(options)
+    expect(modelSetOption).toHaveBeenLastCalledWith(changbleOptions)
 
-    const changbleOptions = model.getOptions()
     expect(viewSetOption).toHaveBeenCalled();
     expect(viewSetOption).toBeCalledTimes(1)
     expect(viewSetOption).toHaveBeenLastCalledWith(changbleOptions)
+
+    const newOptions = model.getOptions()
+    expect(newOptions.values).toEqual(changbleOptions.values)
   })
 })
