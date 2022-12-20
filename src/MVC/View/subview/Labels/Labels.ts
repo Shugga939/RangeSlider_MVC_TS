@@ -3,11 +3,11 @@ import { rotation } from '../../../../Types/Constants'
 import Handle from '../Handle/Handle'
 
 export default class Labels {
-  handle: Handle
-  label1: HTMLSpanElement
-  label2: HTMLSpanElement
-  isRange: boolean
-  isVertical: boolean
+  private handle: Handle
+  private label1: HTMLSpanElement
+  private label2: HTMLSpanElement
+  private isRange: boolean
+  private isVertical: boolean
 
   constructor(options: Options, handle: Handle) {
     this.handle = handle
@@ -35,10 +35,26 @@ export default class Labels {
 
   setOptions(options: Options): void {
     this.isRange = options.range === true
-    this.isVertical = options.orientation === rotation.VERTICAL
+    const setebleIsVertical = options.orientation === rotation.VERTICAL
+    if (setebleIsVertical !== this.isVertical) {
+      this.delete()
+      this.isVertical = options.orientation === rotation.VERTICAL
+      this.render()
+    }
+  }
+
+  // for tests
+  getOptions() {
+    return [this.isRange, this.isVertical]
+  }
+  // for tests
+  get labels() {
+    return [this.label1, this.label2]
   }
 
   delete(): void {
+    this.label1.classList.remove('label_vertical', 'label_horizontal', 'value_label')
+    this.label2.classList.remove('label_vertical', 'label_horizontal', 'value_label')
     this.label1.remove()
     this.label2.remove()
   }

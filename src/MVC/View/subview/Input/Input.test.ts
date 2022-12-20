@@ -44,44 +44,71 @@ describe('Input test', () => {
   const size_slider = 300
   
   test('Render method', () => {
-    const init = jest.spyOn(input, 'renderInput');
-    input.renderInput(appElement)
-    const inputElement = input.input
-    
-    expect(init).toHaveBeenCalled();
-    expect(init).toHaveBeenCalledTimes(1);
-    expect([...appElement.children].includes(inputElement))
+    const render = jest.spyOn(input, 'render');
+    input.render(appElement)
+    const inputElement = input.inputElement
+
+    expect(render).toHaveBeenCalled();
+    expect(render).toHaveBeenCalledTimes(1);
+    expect([...appElement.children].includes(inputElement)).toBe(true)
     expect(inputElement.style.display).toBeDefined();
     expect(inputElement.type === 'text')
   });
   
-  // test('Init method', () => {
-  //   const init = jest.spyOn(input, 'init');
-  //   input.init(handle, size_slider)
-  //   expect(init).toHaveBeenCalled();
-  //   expect(init).toHaveBeenCalledTimes(1);
+  test('Init method', () => {
+    const init = jest.spyOn(input, 'init');
+    input.init(handle, size_slider)
+    expect(init).toHaveBeenCalled();
+    expect(init).toHaveBeenCalledTimes(1);
+  });
 
-  // });
-  
-  // test('getValue method', () => {
-  //   const controller = new Controller(model, view);
-  //   const value = controller.getValue();
-  //   expect(value).toEqual(options.values);
-  // });
+  test('_addListener method', () => {
+    const addListener = jest.spyOn(Input.prototype as any, '_addListener');
+    const inputEvent = new InputEvent('change', {bubbles: true});
 
-  // test('setOptions method', () => {
-  //   const controller = new Controller(model, view);
-  //   const viewSetOption = jest.spyOn(view, 'setOption');
-  //   const modelSetOption = jest.spyOn(model, 'setOption');
+    input.init(handle, size_slider)
+    expect(addListener).toHaveBeenCalled();
+    expect(addListener).toHaveBeenCalledTimes(1);
 
-  //   controller.setOptions(options)
-  //   expect(modelSetOption).toHaveBeenCalled();
-  //   expect(modelSetOption).toBeCalledTimes(1)
-  //   expect(modelSetOption).toHaveBeenLastCalledWith(options)
+    const inputElem = input.inputElement
+    
+    inputElem.value = '40 - 60'
+    inputElem.dispatchEvent(inputEvent)
+    let result = `${40 + options.modifier + options.separator + 60 + options.modifier}`
+    expect(inputElem.value).toBe(result)
 
-  //   const changbleOptions = model.getOptions()
-  //   expect(viewSetOption).toHaveBeenCalled();
-  //   expect(viewSetOption).toBeCalledTimes(1)
-  //   expect(viewSetOption).toHaveBeenLastCalledWith(changbleOptions)
-  // })
+    inputElem.value = '80 - 20'
+    inputElem.dispatchEvent(inputEvent)
+    result = `${20 + options.modifier + options.separator + 80 + options.modifier}`
+    expect(inputElem.value).toBe(result)
+
+    inputElem.value = '-10 - 110'
+    inputElem.dispatchEvent(inputEvent)
+    result = `${0 + options.modifier + options.separator + 100 + options.modifier}`
+    expect(inputElem.value).toBe(result)
+
+    input.setOptions({...options, range: false} as Options)
+    inputElem.value = '50'
+    inputElem.dispatchEvent(inputEvent)
+    result = `${50 + options.modifier}`
+    expect(inputElem.value).toBe(result)
+    input.setOptions({...options, range: true} as Options)
+  });
+
+  test('setOptions method', () => {
+    const inputElement = input.inputElement
+    const update = jest.spyOn(Input.prototype as any, 'update');
+    let changbleOptions : Options = {...options, values: [30, 90]}
+    let result = `${30 + options.modifier + options.separator + 90 + options.modifier}`
+    
+    input.setOptions(changbleOptions)
+    expect(update).toHaveBeenCalled();
+    expect(update).toHaveBeenCalledTimes(1);
+    expect(inputElement.value).toBe(result)
+
+    changbleOptions = {...options, values: [10], range: false}
+    input.setOptions(changbleOptions)
+    result = `${10 + options.modifier}`
+    expect(inputElement.value).toBe(result)
+  });
 })

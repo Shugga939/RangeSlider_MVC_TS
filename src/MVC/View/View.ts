@@ -36,7 +36,7 @@ class View {
     this.options = options
     this._initValues()
     this.slider.setOptions(options, this.first_value, this.second_value)
-    this.input.setOptions(options, this.options.values[0], this.options.values[1])
+    this.input.setOptions(options)
   }
 
   _renderDOM(): void {
@@ -52,7 +52,7 @@ class View {
     this.slider.renderSlider(app)
 
     this.input = new Input(this.options)
-    this.input.renderInput(app)
+    this.input.render(app)
   }
 
   _initValues(): void {
