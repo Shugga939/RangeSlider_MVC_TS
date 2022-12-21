@@ -38,6 +38,8 @@ afterEach(() => {
 
 describe('Labels test', () => {
   const appElement = document.createElement('div')
+  appElement.style.display = 'block'
+  appElement.style.width = '600px'
   const observer = new Observer()
   const handle = new Handle(options, observer)
   const label = new Labels(options, handle)
@@ -67,8 +69,6 @@ describe('Labels test', () => {
     label.setOptions({...options, orientation: rotation.HORIZONTAL})
 
     label.labels.forEach((label)=> {
-      console.log([...label.classList]);
-      
       expect([...label.classList]).toEqual(['value_label', 'label_horizontal'])
     })
   });
@@ -81,7 +81,7 @@ describe('Labels test', () => {
     label.delete()
     expect([...handle_1.children].includes(label_1)).toBe(false)
     expect([...handle_2.children].includes(label_2)).toBe(false)
-  })
+  });
   
   test('setOptions method', () => {
     const changbleOptions : Options = {...options, orientation: rotation.HORIZONTAL, range: false}
@@ -90,5 +90,34 @@ describe('Labels test', () => {
     const [isRange, isVertical] = label.getOptions()
     expect(isRange).toBe(false)
     expect(isVertical).toBe(false)
+    label.render()
+  });
+
+  test('update method', () => {
+    label.setOptions(options)
+
+    Object.defineProperties(handle_1, {
+      offsetWidth: {
+        get: () => 6
+      },
+    });
+  
+    Object.defineProperties(handle_2, {
+      offsetWidth: {
+        get: () => 6
+      },
+    });
+
+    const label_1 = label.labels[0]
+    const label_2 = label.labels[1]
+    
+    label.update(70, 90)
+
+    expect(label_1.textContent).toBe('70')
+    expect(label_2.textContent).toBe('90')
+
+    expect(label_1.style.marginTop).toBe('3px')
+    expect(label_2.style.marginTop).toBe('3px')
+
   });
 })

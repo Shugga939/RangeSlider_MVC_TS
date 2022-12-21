@@ -75,6 +75,7 @@ export default class Labels {
     if (this.isRange) {
       this.label2.textContent = `${second_value}`
       let half_size_secondLabel: number
+
       if (this.isVertical) {
         half_size_secondLabel = this.label2.offsetHeight / 2
         this.label2.style.marginTop = `${half_width_handle - half_size_secondLabel - this.label2.clientTop}px`
