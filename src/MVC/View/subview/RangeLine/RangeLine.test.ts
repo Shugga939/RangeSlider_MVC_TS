@@ -43,10 +43,7 @@ describe('RangeLine test', () => {
   const observer = new Observer()
   const handle = new Handle(options, observer)
   const rangeLine = new RangeLine(options, handle)
-
   handle.render(appElement, 300)
-  const handle_1 = handle.getHandle1()
-  const handle_2 = handle.getHandle2()
   
   test('render method', () => {
     const render = jest.spyOn(rangeLine, 'render');
@@ -79,7 +76,7 @@ describe('RangeLine test', () => {
     const rangeLineElement = rangeLine.rangeLineElement
     expect(rangeLineElement.style.height).toBe('100px')
     expect(rangeLineElement.style.bottom).toBe('100px')
-
+      
     const changbleOptions : Options = {...options, range: false}
     rangeLine.setOptions(changbleOptions, 100, 200)
     expect(rangeLineElement.style.height).toBe('100px')

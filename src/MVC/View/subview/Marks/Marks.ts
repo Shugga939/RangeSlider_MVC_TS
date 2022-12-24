@@ -6,21 +6,20 @@ import { rotation } from '../../../../Types/Constants'
 import Handle from '../Handle/Handle'
 
 export default class Marks {
-  options: Options
-  marksArray: Array<Mark>
-  handle: Handle
-  slider: HTMLDivElement
-  marksContainer: HTMLDivElement
-  size_slider: number
-  marks: Array<HTMLSpanElement>
+  private options: Options
+  private handle: Handle
+  private slider: HTMLDivElement
+  private marksContainer: HTMLDivElement
+  private size_slider: number
+  private marks: Array<HTMLSpanElement>
 
   constructor(options: Options, handle: Handle) {
-    this.options = options     
+    this.options = options
     this.handle = handle
     this.marksContainer = document.createElement('div')
     this.marks = []
   }
-  
+
   render(slider: HTMLDivElement, size_slider: number) {
     this.slider = slider
     if (this.options.marks.length) {
@@ -33,7 +32,7 @@ export default class Marks {
         mark.textContent = element.label
         mark.classList.add('mark')
         mark.setAttribute('data-value', `${element.value}`)
-        
+
         if (this.options.orientation === rotation.VERTICAL) {
           this.marksContainer.classList.add('marks_vertical')
           mark.style.bottom = `${parseValueInPx(element.value, this.options, this.size_slider) - this.size_slider - half_width_handle}px`
@@ -47,12 +46,12 @@ export default class Marks {
       this.slider.append(this.marksContainer)
     }
   }
-  
+
   init(): void {
-    this.updateStyle()
+    this._updateStyle()
   }
 
-  updateStyle(): void {
+  private _updateStyle(): void {
     const arrOfMarks = [...this.marksContainer.children] as Array<HTMLElement>
     arrOfMarks.forEach((el) => {
       el.style.marginLeft = `-${el.offsetWidth / 2}px`
@@ -77,8 +76,12 @@ export default class Marks {
     this.marks = []
   }
 
-  getDOM_element(): HTMLDivElement {
+  get marksElement() {
     return this.marksContainer
+  }
+
+  get marksArray() {
+    return this.marks
   }
 
   setOptions(option: Options): void {
@@ -86,7 +89,7 @@ export default class Marks {
     if (this.options.marks.length) {
       this.delete()
       this.render(this.slider, this.size_slider)
-      this.updateStyle()
+      this._updateStyle()
     } else {
       this.delete()
     }

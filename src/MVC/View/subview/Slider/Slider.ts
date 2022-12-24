@@ -123,7 +123,7 @@ export default class Slider {
       }
 
       function moveToMark() {
-        const marksElement = that.marks.getDOM_element()
+        const marksElement = that.marks.marksElement
         const targetElement = event.target as HTMLElement
         if (targetElement.parentElement == marksElement) {
           let arrOfMarks = [...marksElement.children] as Array<HTMLElement>

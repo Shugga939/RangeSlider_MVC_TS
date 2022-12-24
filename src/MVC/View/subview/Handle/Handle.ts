@@ -7,15 +7,15 @@ import { rotation } from '../../../../Types/Constants'
 import Labels from '../Labels/Labels'
 
 export default class Handle {
-  options: Options
-  slider: HTMLDivElement
-  observer: Observer
-  handle_1: HTMLSpanElement
-  handle_2: HTMLSpanElement
-  labels: Labels
-  first_value: number   // in px
-  second_value: number  // in px
-  size_slider: number
+  private options: Options
+  private slider: HTMLDivElement
+  private observer: Observer
+  private handle_1: HTMLSpanElement
+  private handle_2: HTMLSpanElement
+  private labels: Labels
+  private first_value: number   // in px
+  private second_value: number  // in px
+  private size_slider: number
 
   constructor(options: Options, observer: Observer) {
     this.options = options
@@ -31,9 +31,9 @@ export default class Handle {
     const isRange = this.options.range == true
     this.handle_1.classList.add('slider-handle')
     this.handle_2.classList.add('slider-handle')
-    const arrOfHandles: Array<HTMLSpanElement> = [this.handle_1]
-    if (isRange) arrOfHandles.push(this.handle_2)
-    arrOfHandles.forEach(el => this.slider.append(el))
+    const handlesArray: Array<HTMLSpanElement> = [this.handle_1]
+    if (isRange) handlesArray.push(this.handle_2)
+    handlesArray.forEach(el => this.slider.append(el))
     if (this.options.label === true) this.labels.render()
   }
 
@@ -46,29 +46,16 @@ export default class Handle {
     this.update(this.handle_2, this.second_value)
   }
 
-  setOptions(options: Options, first_value: number, second_value: number): void {
-    this.options = options
-    const isRange = this.options.range == true
-    this.first_value = first_value
-    this.second_value = second_value
+  getHandle1(): HTMLSpanElement {
+    return this.handle_1
+  }
 
-    if (isRange) {
-      this.handle_1.after(this.handle_2)
-      this._initStyle()
-      this._addListener()
-    } else {
-      this.handle_2.remove()
-    }
+  getHandle2(): HTMLSpanElement {
+    return this.handle_2
+  }
 
-    if (this.options.label == true) {
-      this.labels.setOptions(options)
-      this.labels.render()
-    } else {
-      this.labels.delete()
-    }
-    
-    this.broadcast(this.handle_1, this.first_value)
-    this.broadcast(this.handle_2, this.second_value)
+  get lables() {
+    return this.labels
   }
 
   update(handle: HTMLSpanElement, spacing_target: number): void {
@@ -100,6 +87,31 @@ export default class Handle {
     this.broadcast(this.handle_2, values[1])
   }
 
+  setOptions(options: Options, first_value: number, second_value: number): void {
+    this.options = options
+    const isRange = this.options.range == true
+    this.first_value = first_value
+    this.second_value = second_value
+
+    if (isRange) {
+      this.handle_1.after(this.handle_2)
+      this._initStyle()
+      this._addListener()
+    } else {
+      this.handle_2.remove()
+    }
+
+    if (this.options.label == true) {
+      this.labels.setOptions(options)
+      this.labels.render()
+    } else {
+      this.labels.delete()
+    }
+    
+    this.broadcast(this.handle_1, this.first_value)
+    this.broadcast(this.handle_2, this.second_value)
+  }
+
   broadcast(handle: HTMLSpanElement, spacing_target: number): void  {
     handle == this.handle_1 ?
       this.first_value = spacing_target
@@ -125,15 +137,7 @@ export default class Handle {
     }
   }
 
-  getHandle1(): HTMLSpanElement {
-    return this.handle_1
-  }
-
-  getHandle2(): HTMLSpanElement {
-    return this.handle_2
-  }
-
-  _addListener(): void {
+  private _addListener(): void {
     const that = this
     const slider = this.slider
     const isRange = this.options.range == true
@@ -214,13 +218,13 @@ export default class Handle {
 
           if (target >= target_up) {
             if (isRange && handle == that.handle_1) newRight = that.second_value
-            if (target_up > newRight) { target_up = newRight }
+            if (target_up > newRight) target_up = newRight 
             that.broadcast(handle, target_up)
           }
 
           if (target <= target_down) {
             if (isRange && handle == that.handle_2 && target_down < that.first_value) target_down = that.first_value
-            if (target_down < 0) { target_down = 0 }
+            if (target_down < 0) target_down = 0 
             that.broadcast(handle, target_down)
           }
         }
