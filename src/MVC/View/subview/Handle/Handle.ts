@@ -58,6 +58,10 @@ export default class Handle {
     return this.labels
   }
 
+  get values() {
+    return [this.first_value, this.second_value]
+  }
+
   update(handle: HTMLSpanElement, spacing_target: number): void {
     const that = this
     const isVertical = this.options.orientation === rotation.VERTICAL
@@ -138,104 +142,114 @@ export default class Handle {
   }
 
   private _addListener(): void {
+    const isRange = this.options.range == true
+    
+    this.handle_1.addEventListener('mousedown', this._moveHandle.bind(this))
+    this.handle_1.addEventListener('touchstart', this._moveHandle.bind(this))
+
+    if (isRange) {
+      this.handle_2.addEventListener('mousedown', this._moveHandle.bind(this))
+      this.handle_2.addEventListener('touchstart', this._moveHandle.bind(this))
+    }
+  }
+
+  private _moveHandle(event: TouchEvent | MouseEvent) {
     const that = this
     const slider = this.slider
     const isRange = this.options.range == true
     const isVertical = this.options.orientation === rotation.VERTICAL
     const step = this.options.step
     const borderWidth_of_slider = isVertical ? slider.clientTop : slider.clientLeft
-    
-    this.handle_1.addEventListener('mousedown', HandleMove)
-    this.handle_1.addEventListener('touchstart', HandleMove)
 
-    if (isRange) {
-      this.handle_2.addEventListener('mousedown', HandleMove)
-      this.handle_2.addEventListener('touchstart', HandleMove)
+    event.preventDefault()
+    event.stopPropagation()
+    document.addEventListener('mousemove', MouseMove)
+    document.addEventListener('mouseup', MouseUp)
+    document.addEventListener('touchmove', MouseMove)
+    document.addEventListener('touchend', MouseUp)
+
+    const handle = event.currentTarget as HTMLElement
+    const { x } = slider.getBoundingClientRect()
+    const { y } = slider.getBoundingClientRect()
+    const clientX = event instanceof TouchEvent ? event.touches[0].clientX : event.clientX
+    const clientY = event instanceof TouchEvent ? event.touches[0].clientY : event.clientY
+    let shift: number
+    let margin_handle: number
+
+    
+    if (isVertical) {
+      shift = (clientY - handle.getBoundingClientRect().top - handle.offsetHeight / 2) || 0    // было || "0"
+      margin_handle = parseInt(getComputedStyle(handle).marginTop)
+    } else {
+      shift = clientX - handle.getBoundingClientRect().left || handle.offsetHeight / 2
+      margin_handle = parseInt(getComputedStyle(handle).marginLeft)
     }
 
-    function HandleMove(event: TouchEvent | MouseEvent) {
-      event.preventDefault()
-      event.stopPropagation()
-      document.addEventListener('mousemove', MouseMove)
-      document.addEventListener('mouseup', MouseUp)
-      document.addEventListener('touchmove', MouseMove)
-      document.addEventListener('touchend', MouseUp)
+    function MouseMove(event: TouchEvent | MouseEvent) {
+      const clientX: number = event instanceof TouchEvent ? event.touches[0].clientX : event.clientX
+      const clientY: number = event instanceof TouchEvent ? event.touches[0].clientY : event.clientY
+      let target: number
+      let newRight = that.size_slider
 
-      const handle = event.currentTarget as HTMLElement
-      const { x } = slider.getBoundingClientRect()
-      const { y } = slider.getBoundingClientRect()
-      const clientX = event instanceof TouchEvent ? event.touches[0].clientX : event.clientX
-      const clientY = event instanceof TouchEvent ? event.touches[0].clientY : event.clientY
-      let shift: number
-      let margin_handle: number
+      isVertical ?
+        target = -(clientY - y - shift - margin_handle - that.size_slider)
+        :
+        target = clientX - x - shift - margin_handle - borderWidth_of_slider
 
-      if (isVertical) {
-        shift = (clientY - handle.getBoundingClientRect().top - handle.offsetHeight / 2) || 0    // было || "0"
-        margin_handle = parseInt(getComputedStyle(handle).marginTop)
-      } else {
-        shift = clientX - handle.getBoundingClientRect().left || handle.offsetHeight / 2
-        margin_handle = parseInt(getComputedStyle(handle).marginLeft)
+      step ? moveIfStep() : moveIfNotStep()
+
+      function moveIfNotStep() {
+        if (handle == that.handle_1) {
+          if (isRange) newRight = that.second_value
+          if (target < 0) target = 0
+        } else {
+          if (target < that.first_value) target = that.first_value
+        }
+        if (target > newRight) {
+          target = newRight;
+        }
+        that.broadcast(handle, target)
       }
 
-      function MouseMove(event: TouchEvent | MouseEvent) {
-        const clientX: number = event instanceof TouchEvent ? event.touches[0].clientX : event.clientX
-        const clientY: number = event instanceof TouchEvent ? event.touches[0].clientY : event.clientY
+      function moveIfStep() {
+        const step = that.options.step
         const val1 = parsePxInValue(that.first_value, that.options, that.size_slider)
         const val2 = parsePxInValue(that.second_value, that.options, that.size_slider)
-        let target: number
-        let newRight = that.size_slider
+        let target_up: number
+        let target_down: number
 
-        isVertical ?
-          target = -(clientY - y - shift - margin_handle - that.size_slider)
-          :
-          target = clientX - x - shift - margin_handle - borderWidth_of_slider
+        handle == that.handle_1 ? 
+          target_up = parseValueInPx(val1 + Number(step), that.options, that.size_slider) 
+          : 
+          target_up = parseValueInPx(val2 + Number(step), that.options, that.size_slider)
 
-        step ? moveIfStep() : moveIfNotStep()
+        handle == that.handle_1 ? 
+          target_down = parseValueInPx(val1 - Number(step), that.options, that.size_slider)
+          : 
+          target_down = parseValueInPx(val2 - Number(step), that.options, that.size_slider)
 
-        function moveIfNotStep() {
-          if (handle == that.handle_1) {
-            if (isRange) newRight = that.second_value
-            if (target < 0) target = 0
-          } else {
-            if (target < that.first_value) target = that.first_value
-          }
-          if (target > newRight) {
-            target = newRight;
-          }
-          that.broadcast(handle, target)
+        if (target_up > newRight) target_up = newRight
+        if (target_down < 0) target_down = 0
+
+        if (target >= target_up) {
+          if (isRange && handle == that.handle_1) newRight = that.second_value
+          if (target_up > newRight) target_up = newRight 
+          that.broadcast(handle, target_up)
         }
 
-        function moveIfStep() {
-          const step = that.options.step
-          let target_up: number
-          let target_down: number
-
-          handle == that.handle_1 ? target_up = parseValueInPx(+val1 + +step, that.options, that.size_slider) : target_up = parseValueInPx(+val2 + +step, that.options, that.size_slider)
-          handle == that.handle_1 ? target_down = parseValueInPx(+val1 - +step, that.options, that.size_slider) : target_down = parseValueInPx(+val2 - +step, that.options, that.size_slider)
-
-          if (target_up > newRight) target_up = newRight
-          if (target_down < 0) target_down = 0
-
-          if (target >= target_up) {
-            if (isRange && handle == that.handle_1) newRight = that.second_value
-            if (target_up > newRight) target_up = newRight 
-            that.broadcast(handle, target_up)
-          }
-
-          if (target <= target_down) {
-            if (isRange && handle == that.handle_2 && target_down < that.first_value) target_down = that.first_value
-            if (target_down < 0) target_down = 0 
-            that.broadcast(handle, target_down)
-          }
+        if (target <= target_down) {
+          if (isRange && handle == that.handle_2 && target_down < that.first_value) target_down = that.first_value
+          if (target_down < 0) target_down = 0 
+          that.broadcast(handle, target_down)
         }
       }
+    }
 
-      function MouseUp() {
-        document.removeEventListener('mouseup', MouseUp)
-        document.removeEventListener('mousemove', MouseMove)
-        document.removeEventListener('touchmove', MouseMove)
-        document.removeEventListener('touchend', MouseUp)
-      }
+    function MouseUp() {
+      document.removeEventListener('mouseup', MouseUp)
+      document.removeEventListener('mousemove', MouseMove)
+      document.removeEventListener('touchmove', MouseMove)
+      document.removeEventListener('touchend', MouseUp)
     }
   }
 }

@@ -6,7 +6,6 @@ export default class RangeLine {
     private rangeLine : HTMLElement
     private slider : HTMLElement
     private handle: Handle
-    // private options : Options
     private half_width_handle : number
     private borderWidth_of_slider : number
     private isRange: boolean
@@ -36,7 +35,6 @@ export default class RangeLine {
     }
 
     setOptions (options: Options, first_value: number, second_value: number) : void {
-      // this.options = options
       this.isRange = options.range === true
       this._updateStyle()
       this.update(first_value, second_value)

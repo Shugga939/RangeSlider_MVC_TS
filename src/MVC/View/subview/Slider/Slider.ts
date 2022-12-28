@@ -9,17 +9,17 @@ import Handle from '../Handle/Handle'
 import RangeLine from '../RangeLine/RangeLine'
 
 export default class Slider {
-  options: Options
-  observer: Observer
-  slider: HTMLDivElement
-  marks: Marks
-  handle: Handle
-  first_handle: HTMLSpanElement
-  second_handle: HTMLSpanElement
-  rangeLine: RangeLine
-  first_value: number     // in px
-  second_value: number    // in px
-  size_slider: number    // in px
+  private options: Options
+  private observer: Observer
+  private slider: HTMLDivElement
+  private marks: Marks
+  private handle: Handle
+  private first_handle: HTMLSpanElement
+  private second_handle: HTMLSpanElement
+  private rangeLine: RangeLine
+  private first_value: number     // in px
+  private second_value: number    // in px
+  private size_slider: number    // in px
 
   constructor(options: Options, observer: Observer) {
     this.options = options
@@ -45,12 +45,6 @@ export default class Slider {
     this._addListener()
   }
 
-  private _initComponents(first_value: number, second_value: number) {
-    this.handle.init(first_value, second_value)
-    this.rangeLine.init(first_value, second_value)
-    this.marks.init()
-  }
-
   setOptions(options: Options, first_value: number, second_value: number) {
     this.options = options
     this._setValues(first_value, second_value)
@@ -72,8 +66,18 @@ export default class Slider {
     this.marks.updateSize(size_slider)
   } 
 
-  getDOM_element(): HTMLDivElement {
+  get sliderElement () {
     return this.slider
+  }
+
+  get handleComponent () {
+    return this.handle
+  }
+
+  private _initComponents(first_value: number, second_value: number) {
+    this.handle.init(first_value, second_value)
+    this.rangeLine.init(first_value, second_value)
+    this.marks.init()
   }
 
   private _setValues(first_value: number, second_value: number) {
