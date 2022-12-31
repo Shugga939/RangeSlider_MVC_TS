@@ -25,10 +25,11 @@ class View {
 
   init(options: Options): void {
     this.options = options
+    this._createComponents()
     this._renderDOM()
     this._initValues()
     this._initComponents()
-    this._addObserver()
+    this._subscribe()
     this._addResizeListener()
   }
 
@@ -42,6 +43,32 @@ class View {
     return this.parsedValues
   }
 
+  // for test
+  get sliderComponent() {
+    return this.slider
+  }
+  // for test
+  get inputComponent() {
+    return this.input
+  }
+  // for test
+  get viewOptions() {
+    return this.options
+  }
+  // for test
+  get values() {
+    return [this.first_value, this.second_value]
+  }
+  // for test
+  get viewObserver() {
+    return this.observer
+  }
+
+  private _createComponents() {
+    this.slider = new Slider(this.options, this.observer)
+    this.input = new Input(this.options)
+  }
+
   private _renderDOM(): void {
     let app
     if (this.parrentElement.classList.contains('slider')) {
@@ -51,10 +78,7 @@ class View {
       app.classList.add('slider')
       this.parrentElement.append(app)
     }
-    this.slider = new Slider(this.options, this.observer)
     this.slider.render(app)
-
-    this.input = new Input(this.options)
     this.input.render(app)
   }
 
@@ -78,14 +102,13 @@ class View {
     this.input.update(this.parsedValues[0], this.parsedValues[1])
   }
 
-  private _addObserver(): void {
-    const that = this
-    this.observer.subscribe(updateApp)
-
-    function updateApp(first_value: number, second_value: number): void {
-      that._update(first_value, second_value)
-      that._updateComponents()
-    }
+  subscribe(): void {
+    this.observer.subscribe(this._updateApp)
+  }
+  
+  private _updateApp() {
+    this._update(this.first_value, this.second_value)
+    this._updateComponents()
   }
 
   private _update(first_value: number, second_value: number): void {
