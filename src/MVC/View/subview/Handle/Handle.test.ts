@@ -32,6 +32,7 @@ const options: Options = {
 
 afterEach(() => {
   jest.restoreAllMocks();
+  jest.clearAllMocks()
 });
 
 
@@ -182,101 +183,3 @@ describe('Handle test', () => {
     expect(handle.values[1]).toBe(210)
   });
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// test('move handle without step', () => {
-//   const sliderElement = document.createElement('div')
-//   const size_slider = 300
-
-//   const observer = new Observer()
-//   const handle = new Handle(options, observer)
-
-//   const handle_1 = handle.getHandle1()
-//   const handle_2 = handle.getHandle2()
-
-//   handle_1.style.marginTop = '0px'
-//   handle_2.style.marginTop = '0px'
-
-//   handle.render(sliderElement, size_slider)
-//   handle.init(100, 200)
-
-//   const target_1 = 190
-//   const target_2 = 290
-//   const eventMouseDown = new MouseEvent('mousedown', {bubbles: true})
-//   const eventMouseUp = new MouseEvent('mouseup', {bubbles: true})
-//   let eventMouseMove = new MouseEvent('mousemove', {clientY: target_1})
-
-//   handle_1.dispatchEvent(eventMouseDown)
-//   document.dispatchEvent(eventMouseMove)
-//   document.dispatchEvent(eventMouseUp)
-//   expect(handle.values[0]).toBe(size_slider - target_1)
-
-//   eventMouseMove = new MouseEvent('mousemove', {clientY: target_2})
-//   handle_2.dispatchEvent(eventMouseDown)
-//   document.dispatchEvent(eventMouseMove)
-//   document.dispatchEvent(eventMouseUp)
-//   expect(handle.values[1]).toBe(size_slider - target_2)
-// });
-
-// test('move handle with step', () => {
-//   const sliderElement = document.createElement('div')
-//   const size_slider = 300
-//   const step = 10
-
-//   const observer = new Observer()
-//   const handle = new Handle({...options, step: step, orientation: rotation.HORIZONTAL }, observer)
-
-//   const handle_1 = handle.getHandle1()
-//   const handle_2 = handle.getHandle2()
-
-//   handle_1.style.marginTop = '0px'
-//   handle_2.style.marginTop = '0px'
-
-//   handle.render(sliderElement, size_slider)
-//   handle.init(90, 180)
-  
-//   const target_1 = 55
-//   const target_2 = 205
-
-//   const eventMouseDown = new MouseEvent('mousedown', {bubbles: true})
-//   const eventMouseUp = new MouseEvent('mouseup', {bubbles: true})
-//   let eventMouseMove = new MouseEvent('mousemove', {clientX: target_1})
-
-//   handle_1.dispatchEvent(eventMouseDown)
-//   document.dispatchEvent(eventMouseMove)
-//   document.dispatchEvent(eventMouseUp)
-//   expect(handle.values[0]).toBe(60)
-
-//   eventMouseMove = new MouseEvent('mousemove', {clientX: target_2})
-//   handle_2.dispatchEvent(eventMouseDown)
-//   document.dispatchEvent(eventMouseMove)
-//   document.dispatchEvent(eventMouseUp)
-//   expect(handle.values[1]).toBe(180)
-// });

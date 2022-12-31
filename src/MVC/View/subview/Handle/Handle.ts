@@ -85,7 +85,7 @@ export default class Handle {
     }
   }
 
-  updateSize(size_slider: number, values: Array<number>) {
+  updateSize(size_slider: number, values: [number, number]) {
     this.size_slider = size_slider
     this.broadcast(this.handle_1, values[0])
     this.broadcast(this.handle_2, values[1])

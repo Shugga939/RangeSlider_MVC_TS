@@ -42,12 +42,7 @@ describe('Controller test', () => {
   const view = new View(sliderElem)
 
     // @ts-ignore
-  window.HTMLElement.prototype.getBoundingClientRect = () => {
-    return {
-      width: 5,
-      height: 300,
-    };
-  };
+    sliderElem.getBoundingClientRect = () => ({height: size_slider})
   
   test('Init components method', () => {
     const init = jest.spyOn(view, 'init');
