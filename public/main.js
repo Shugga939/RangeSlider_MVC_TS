@@ -1,7 +1,7 @@
 const sliders = document.querySelectorAll('.slider')
 const [slider_container_1, slider_container_2] = sliders
 
-const slider1 = new Slider({
+const slider1 = new customSlider({
   min_value: 0,
   max_value: 100,
   values: [50],
@@ -14,7 +14,7 @@ const slider1 = new Slider({
   marks: []
 }, slider_container_1)
 
-const slider2 = new Slider({
+const slider2 = new customSlider({
   min_value: 1000,
   max_value: 5000,
   values: [1500, 4500],

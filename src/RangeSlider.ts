@@ -5,10 +5,10 @@ import {Options} from './Types/Interfaces'
 
 declare global {
   interface Window {
-    Slider: object
+    customSlider: object
   }
 }
 
-window.Slider = function (options:Options, element: HTMLDivElement) {
+window.customSlider = function (options:Options, element: HTMLDivElement) {
   return new Controller (new Model(options), new View(element))
 }
