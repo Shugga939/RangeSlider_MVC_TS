@@ -1,160 +1,160 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="index.css">
-  <link rel="stylesheet" href="Range-slider.css">
-  <title>Demonstration page</title>
-</head>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="Range-slider.css">
+    <title>Demonstration page</title>
+  </head>
 
-<body>
-  <div class="container">
-    <div class="container__row container__row--line">
-      <div class="slider-container">
-        <div class="slider first-slider"></div>
+  <body>
+    <div class="container">
+      <div class="container__row container__row--line">
+        <div class="slider-container">
+          <div class="slider first-slider"></div>
+        </div>
+        <div class="controls">
+          <label class="checkbox">
+            <input type="checkbox" name="range">
+            <span class="checkbox__state"></span>
+            <div class="checkbox__text">
+              <span> Диапазон </span>
+            </div>
+          </label>
+
+          <label class="checkbox">
+            <input type="checkbox" name="label">
+            <span class="checkbox__state"></span>
+            <div class="checkbox__text">
+              <span> Показывать значения </span>
+            </div>
+          </label>
+
+          <label class="text-field">
+            <span class="text-field__title">
+              Минимальное значение
+            </span>
+            <input 
+              class="text-field__input"
+              type="number" 
+              name="min_value"
+              placeholder="0"
+            >
+          </label>
+
+          <label class="text-field">
+            <span class="text-field__title">
+              Максимальное значение
+            </span>
+            <input 
+              class="text-field__input"
+              type="number" 
+              name="max_value"
+              placeholder="100"
+            >
+          </label>
+
+          <label class="text-field">
+            <span class="text-field__title">
+              Шаг слайдера
+            </span>
+            <input 
+              class="text-field__input"
+              type="number" 
+              name="step"
+              placeholder="0"
+            >
+          </label>
+
+          <label class="text-field">
+            <span class="text-field__title">
+              Задать значения (через запятую)
+            </span>
+            <input 
+              class="text-field__input"
+              type="text" 
+              name="setup_value"
+              placeholder="50"
+            >
+          </label>
+
+        </div>
       </div>
-      <div class="controls">
-        <label class="checkbox">
-          <input type="checkbox" name="range">
-          <span class="checkbox__state"></span>
-          <div class="checkbox__text">
-            <span> Диапазон </span>
-          </div>
-        </label>
+      <div class="container__row">
+        <div class="slider-container second-slider-container">
+          <div class="slider second-slider"></div>
+        </div>
+        <div class="controls">
+          <label class="checkbox">
+            <input type="checkbox" name="range" checked="true">
+            <span class="checkbox__state"></span>
+            <div class="checkbox__text">
+              <span> Диапазон </span>
+            </div>
+          </label>
 
-        <label class="checkbox">
-          <input type="checkbox" name="label">
-          <span class="checkbox__state"></span>
-          <div class="checkbox__text">
-            <span> Показывать значения </span>
-          </div>
-        </label>
+          <label class="checkbox">
+            <input type="checkbox" name="label" checked="true">
+            <span class="checkbox__state"></span>
+            <div class="checkbox__text">
+              <span> Показывать значения </span>
+            </div>
+          </label>
 
-        <label class="text-field">
-          <span class="text-field__title">
-            Минимальное значение
-          </span>
-          <input 
-            class="text-field__input"
-            type="number" 
-            name="min_value"
-            placeholder="0"
-          >
-        </label>
+          <label class="text-field">
+            <span class="text-field__title">
+              Минимальное значение
+            </span>
+            <input 
+              class="text-field__input"
+              type="number" 
+              name="min_value"
+              placeholder="1000"
+            >
+          </label>
 
-        <label class="text-field">
-          <span class="text-field__title">
-            Максимальное значение
-          </span>
-          <input 
-            class="text-field__input"
-            type="number" 
-            name="max_value"
-            placeholder="100"
-          >
-        </label>
+          <label class="text-field">
+            <span class="text-field__title">
+              Максимальное значение
+            </span>
+            <input 
+              class="text-field__input"
+              type="number" 
+              name="max_value"
+              placeholder="5000"
+            >
+          </label>
 
-        <label class="text-field">
-          <span class="text-field__title">
-            Шаг слайдера
-          </span>
-          <input 
-            class="text-field__input"
-            type="number" 
-            name="step"
-            placeholder="0"
-          >
-        </label>
+          <label class="text-field">
+            <span class="text-field__title">
+              Шаг слайдера
+            </span>
+            <input 
+              class="text-field__input"
+              type="number" 
+              name="step"
+              placeholder="100"
+            >
+          </label>
 
-        <label class="text-field">
-          <span class="text-field__title">
-            Задать значения (через запятую)
-          </span>
-          <input 
-            class="text-field__input"
-            type="text" 
-            name="setup_value"
-            placeholder="50"
-          >
-        </label>
-
+          <label class="text-field">
+            <span class="text-field__title">
+              Задать значения (через запятую)
+            </span>
+            <input 
+              class="text-field__input"
+              type="text" 
+              name="setup_value"
+              placeholder="1500 , 4500"
+            >
+          </label>
+        </div>
       </div>
-    </div>
-    <div class="container__row">
-      <div class="slider-container second-slider-container">
-        <div class="slider second-slider"></div>
-      </div>
-      <div class="controls">
-        <label class="checkbox">
-          <input type="checkbox" name="range" checked="true">
-          <span class="checkbox__state"></span>
-          <div class="checkbox__text">
-            <span> Диапазон </span>
-          </div>
-        </label>
-
-        <label class="checkbox">
-          <input type="checkbox" name="label" checked="true">
-          <span class="checkbox__state"></span>
-          <div class="checkbox__text">
-            <span> Показывать значения </span>
-          </div>
-        </label>
-
-        <label class="text-field">
-          <span class="text-field__title">
-            Минимальное значение
-          </span>
-          <input 
-            class="text-field__input"
-            type="number" 
-            name="min_value"
-            placeholder="1000"
-          >
-        </label>
-
-        <label class="text-field">
-          <span class="text-field__title">
-            Максимальное значение
-          </span>
-          <input 
-            class="text-field__input"
-            type="number" 
-            name="max_value"
-            placeholder="5000"
-          >
-        </label>
-
-        <label class="text-field">
-          <span class="text-field__title">
-            Шаг слайдера
-          </span>
-          <input 
-            class="text-field__input"
-            type="number" 
-            name="step"
-            placeholder="100"
-          >
-        </label>
-
-        <label class="text-field">
-          <span class="text-field__title">
-            Задать значения (через запятую)
-          </span>
-          <input 
-            class="text-field__input"
-            type="text" 
-            name="setup_value"
-            placeholder="1500 , 4500"
-          >
-        </label>
-      </div>
-    </div>
-  <script type="module" src="RangeSlider.js"></script>
-  <script type="module" src="main.js"></script>
-</body>
+    <script type="module" src="RangeSlider.js"></script>
+    <script type="module" src="main.js"></script>
+  </body>
 
 </html>
