@@ -4,6 +4,7 @@
 
 import { rotation } from '../../Types/Constants';
 import { Options } from '../../Types/Interfaces'
+import Slider from './subview/Slider/Slider';
 import View from './View';
 
 const options: Options = {
@@ -58,10 +59,10 @@ describe('Slider test', () => {
     const _renderDOM = jest.spyOn(View.prototype as any, '_renderDOM');
     const _initValues = jest.spyOn(View.prototype as any, '_initValues');
     const _initComponents = jest.spyOn(View.prototype as any, '_initComponents');
-    const _subscribe = jest.spyOn(View.prototype as any, '_subscribe');
+    const subscribe = jest.spyOn(view, 'subscribe');
     const _addResizeListener = jest.spyOn(View.prototype as any, '_addResizeListener');
     
-    view.init(options)
+    view.init(options) 
     const slider = view.sliderComponent
     const input = view.inputComponent
     
@@ -80,26 +81,37 @@ describe('Slider test', () => {
     expect(_initValues).toHaveBeenCalledTimes(1);
     expect(_initComponents).toHaveBeenCalled();
     expect(_initComponents).toHaveBeenCalledTimes(1);
-    expect(_subscribe).toHaveBeenCalled();
-    expect(_subscribe).toHaveBeenCalledTimes(1);
+    expect(subscribe).toHaveBeenCalled();
+    expect(subscribe).toHaveBeenCalledTimes(1);
     expect(_addResizeListener).toHaveBeenCalled();
     expect(_addResizeListener).toHaveBeenCalledTimes(1);
   });
 
   test('setOptions method', () => {
-    const _update = jest.spyOn(View.prototype as any, '_update');
-    const _updateComponents = jest.spyOn(View.prototype as any, '_updateComponents');
-    const mockUpdateFn = jest.fn(()=>{})
-    
-    view.subscribe(mockUpdateFn)
-    observer.
-    expect(view.viewOptions).toEqual(options)
-    expect(view.values).toEqual([60,180])
-    expect(view.getCurrentValues()).toEqual(options.values)
+    const _initValues = jest.spyOn(View.prototype as any, '_initValues');
+    const _setOptionsInComponents = jest.spyOn(View.prototype as any, '_setOptionsInComponents');
+    const newOptions : Options = {...options, values: [80, 90] }
 
-    expect(_update).toHaveBeenCalled();
-    expect(_update).toHaveBeenCalledTimes(1);
-    expect(_updateComponents).toHaveBeenCalled();
-    expect(_updateComponents).toHaveBeenCalledTimes(1);
+    view.setOption(newOptions)
+    expect(view.viewOptions).toEqual(newOptions)
+    expect(view.values).toEqual([240,270])
+    expect(view.getCurrentValues()).toEqual(newOptions.values)
+
+    expect(_initValues).toHaveBeenCalled();
+    expect(_initValues).toHaveBeenCalledTimes(1);
+    expect(_setOptionsInComponents).toHaveBeenCalled();
+    expect(_setOptionsInComponents).toHaveBeenCalledTimes(1);
+  });
+
+  test('resize method', () => {
+    const slider = view.sliderComponent
+    const oldValues = view.getCurrentValues()
+    // @ts-ignore
+    slider.sliderElement.getBoundingClientRect = () => ({height: 200, y: 0})
+    const resizeEvent = new Event('resize')
+
+    window.dispatchEvent(resizeEvent)
+    expect(view.values).not.toEqual(oldValues)
+    expect(view.values).toEqual([160,180])
   });
 })

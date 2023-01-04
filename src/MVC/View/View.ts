@@ -29,7 +29,7 @@ class View {
     this._renderDOM()
     this._initValues()
     this._initComponents()
-    this._subscribe()
+    this.subscribe(this._updateApp.bind(this))
     this._addResizeListener()
   }
 
@@ -41,6 +41,10 @@ class View {
 
   getCurrentValues(): [number, number] {
     return this.parsedValues
+  }
+
+  subscribe(fn: Function): void {
+    this.observer.subscribe(fn)
   }
 
   // for test
@@ -101,13 +105,9 @@ class View {
     this.input.init(this.slider.handleComponent, this.size_slider)
     this.input.update(this.parsedValues[0], this.parsedValues[1])
   }
-
-  subscribe(): void {
-    this.observer.subscribe(this._updateApp)
-  }
   
-  private _updateApp() {
-    this._update(this.first_value, this.second_value)
+  private _updateApp(first_value: number, second_value: number) {
+    this._update(first_value, second_value)
     this._updateComponents()
   }
 
@@ -131,22 +131,23 @@ class View {
   }
 
   private _addResizeListener(): void {
-    const resizeHandler = () => {
-      const isVertical = this.options.orientation === rotation.VERTICAL
-      const sliderElement = this.slider.sliderElement
+    window.addEventListener('resize', this._resizeHandler.bind(this))
+  }
 
-      const size_slider = isVertical ?
-        sliderElement.getBoundingClientRect().height
-        :
-        sliderElement.getBoundingClientRect().width
+  private _resizeHandler() {
+    const isVertical = this.options.orientation === rotation.VERTICAL
+    const sliderElement = this.slider.sliderElement
 
-      const value_1 = parseValueInPx(this.parsedValues[0], this.options, size_slider)
-      const value_2 = parseValueInPx(this.parsedValues[1], this.options, size_slider)
+    const size_slider = isVertical ?
+      sliderElement.getBoundingClientRect().height
+      :
+      sliderElement.getBoundingClientRect().width
 
-      this.size_slider = size_slider
-      this.slider.updateSize(this.size_slider, [value_1, value_2])
-    }
-    window.addEventListener('resize', resizeHandler)
+    const value_1 = parseValueInPx(this.parsedValues[0], this.options, size_slider)
+    const value_2 = parseValueInPx(this.parsedValues[1], this.options, size_slider)
+
+    this.size_slider = size_slider
+    this.slider.updateSize(this.size_slider, [value_1, value_2])
   }
 }
 
